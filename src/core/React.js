@@ -22,6 +22,7 @@ var ReactCompositeComponent = require('ReactCompositeComponent');
 var ReactComponent = require('ReactComponent');
 var ReactDOM = require('ReactDOM');
 var ReactMount = require('ReactMount');
+var ReactServerRendering = require('ReactServerRendering');
 
 var ReactDefaultInjection = require('ReactDefaultInjection');
 
@@ -29,6 +30,7 @@ ReactDefaultInjection.inject();
 
 var React = {
   DOM: ReactDOM,
+  getComponentMarkup: ReactServerRendering.getComponentMarkup,
   initializeTouchEvents: function(shouldUseTouch) {
     ReactMount.useTouchEvents = shouldUseTouch;
   },
