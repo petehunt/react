@@ -485,13 +485,13 @@ var ReactComponent = {
      * @internal
      * @see {ReactMount.renderComponent}
      */
-    mountComponentIntoNode: function(rootID, container, shouldReuseMarkup) {
+    mountComponentIntoNode: function(rootID, containerID, shouldReuseMarkup) {
       var transaction = ReactComponent.ReactReconcileTransaction.getPooled();
       transaction.perform(
         this._mountComponentIntoNode,
         this,
         rootID,
-        container,
+        containerID,
         transaction,
         shouldReuseMarkup
       );
@@ -508,7 +508,7 @@ var ReactComponent = {
      */
     _mountComponentIntoNode: function(
         rootID,
-        container,
+        containerID,
         transaction,
         shouldReuseMarkup) {
       var renderStart = Date.now();
@@ -520,21 +520,7 @@ var ReactComponent = {
       }
 
       var injectionStart = Date.now();
-      // Asynchronously inject markup by ensuring that the container is not in
-      // the document when settings its `innerHTML`.
-      var parent = container.parentNode;
-      if (parent) {
-        var next = container.nextSibling;
-        parent.removeChild(container);
-        container.innerHTML = markup;
-        if (next) {
-          parent.insertBefore(container, next);
-        } else {
-          parent.appendChild(container);
-        }
-      } else {
-        container.innerHTML = markup;
-      }
+      ReactComponent.DOMIDOperations.updateInnerHTMLByIDAsync(containerID, markup);
       ReactMount.totalInjectionTime += (Date.now() - injectionStart);
     },
 

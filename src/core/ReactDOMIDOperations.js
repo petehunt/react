@@ -140,6 +140,34 @@ var ReactDOMIDOperations = {
   },
 
   /**
+   * Set innerHTML on a node by ID. This is reserved for big blocks of markup
+   * like the initial markup injection, so it removes the DOM node from the
+   * doc, injects, and adds it back such that the markup is injected async.
+   *
+   * @param {string} id ID of the node to update.
+   * @param {object} html An HTML object with the `__html` property.
+   * @internal
+   */
+  updateInnerHTMLByIDAsync: function(id, html) {
+    // Asynchronously inject markup by ensuring that the container is not in
+    // the document when setting its `innerHTML`.
+    var container = ReactID.getNode(id);
+    var parent = container.parentNode;
+    if (parent) {
+      var next = container.nextSibling;
+      parent.removeChild(container);
+      container.innerHTML = html;
+      if (next) {
+        parent.insertBefore(container, next);
+      } else {
+        parent.appendChild(container);
+      }
+    } else {
+      container.innerHTML = html;
+    }
+  },
+
+  /**
    * Updates a DOM node's text content set by `props.content`.
    *
    * @param {string} id ID of the node to update.
