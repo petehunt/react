@@ -2,7 +2,8 @@
  * @jsx React.DOM
  */
 
-// todo: multiple styleRefs? how to reflect modes?
+// todo: multiple styleRefs? how to reflect modes? make sure order works.
+// todo: shouldCompoenntRender compensation
 
 // util
 function copyProperties(dst, src) {
@@ -14,11 +15,15 @@ function copyProperties(dst, src) {
 }
 
 var GlobalStyleRepository = {
+  baseStyles: {},
   styles: {},
   registerProvider: function(component) {
     // TODO: build in reconciliation here. That's why we deal with instances, not constructors.
     if (component.styles) {
       this.styles[component.constructor.displayName] = component.styles;
+    }
+    if (component.baseStyles) {
+      this.baseStyles[component.constructor.displayName] = component.baseStyles;
     }
   },
   unregisterProvider: function(component) {
@@ -62,8 +67,9 @@ function _calcStyle(computed, path, styles) {
   }
 }
 
-function calcStyle(path, styles) {
+function calcStyle(path, styles, baseStyles) {
   var computed = {};
+  _calcStyle(computed, path, baseStyles);
   _calcStyle(computed, path, styles);
   return computed;
 }
@@ -73,7 +79,7 @@ var StylableMixin = {
     if (!this.getFullStyleRef()) {
       return null;
     }
-    return calcStyle(this.getStylePath(), GlobalStyleRepository.styles);
+    return calcStyle(this.getStylePath(), GlobalStyleRepository.styles, GlobalStyleRepository.baseStyles);
   },
   getFullStyleRef: function() {
     if (!this.props.styleRef) {
