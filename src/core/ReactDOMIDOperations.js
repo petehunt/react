@@ -25,6 +25,7 @@ var CSSPropertyOperations = require('CSSPropertyOperations');
 var DOMChildrenOperations = require('DOMChildrenOperations');
 var DOMPropertyOperations = require('DOMPropertyOperations');
 var ReactID = require('ReactID');
+var ReactContainer = require('ReactContainer');
 
 var getTextContentAccessor = require('getTextContentAccessor');
 var invariant = require('invariant');
@@ -136,6 +137,42 @@ var ReactDOMIDOperations = {
     // HACK: IE8- normalize whitespace in innerHTML, removing leading spaces.
     // @see quirksmode.org/bugreports/archives/2004/11/innerhtml_and_t.html
     node.innerHTML = (html && html.__html || '').replace(/^ /g, '&nbsp;');
+  },
+
+  /**
+   * Set innerHTML on a node by ID. This is reserved for big blocks of markup
+   * like the initial markup injection, so it removes the DOM node from the
+   * doc, injects, and adds it back such that the markup is injected async.
+   *
+   * Note that this is different from updateInnerHTMLByID, as that uses the
+   * ReactID abstraction rather than the raw "ID attribute" since this
+   * function is used to manage containers (which aren't managed by ReactID).
+   *
+   * @param {string} id ID of the node to update.
+   * @param {string} html A string of HTML.
+   * @internal
+   */
+  updateInnerHTMLByContainerID: function(id, html) {
+    // Asynchronously inject markup by ensuring that the container is not in
+    // the document when setting its `innerHTML`.
+    var container = ReactContainer.getContainerByID(id);
+    invariant(
+      container && container.nodeType === 1,
+      'Target container is not a DOM element.'
+    );
+    var parent = container.parentNode;
+    if (parent) {
+      var next = container.nextSibling;
+      parent.removeChild(container);
+      container.innerHTML = html;
+      if (next) {
+        parent.insertBefore(container, next);
+      } else {
+        parent.appendChild(container);
+      }
+    } else {
+      container.innerHTML = html;
+    }
   },
 
   /**

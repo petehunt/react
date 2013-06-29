@@ -479,19 +479,19 @@ var ReactComponent = {
      * Mounts this component and inserts it into the DOM.
      *
      * @param {string} rootID DOM ID of the root node.
-     * @param {DOMElement} container DOM element to mount into.
+     * @param {string} containerID DOM element to mount into.
      * @param {boolean} shouldReuseMarkup If true, do not insert markup
      * @final
      * @internal
      * @see {ReactMount.renderComponent}
      */
-    mountComponentIntoNode: function(rootID, container, shouldReuseMarkup) {
+    mountComponentIntoNode: function(rootID, containerID, shouldReuseMarkup) {
       var transaction = ReactComponent.ReactReconcileTransaction.getPooled();
       transaction.perform(
         this._mountComponentIntoNode,
         this,
         rootID,
-        container,
+        containerID,
         transaction,
         shouldReuseMarkup
       );
@@ -500,7 +500,7 @@ var ReactComponent = {
 
     /**
      * @param {string} rootID DOM ID of the root node.
-     * @param {DOMElement} container DOM element to mount into.
+     * @param {string} containerID DOM element ID to mount into.
      * @param {ReactReconcileTransaction} transaction
      * @param {boolean} shouldReuseMarkup If true, do not insert markup
      * @final
@@ -508,13 +508,9 @@ var ReactComponent = {
      */
     _mountComponentIntoNode: function(
         rootID,
-        container,
+        containerID,
         transaction,
         shouldReuseMarkup) {
-      invariant(
-        container && container.nodeType === 1,
-        'mountComponentIntoNode(...): Target container is not a DOM element.'
-      );
       var renderStart = Date.now();
       var markup = this.mountComponent(rootID, transaction);
       ReactMount.totalInstantiationTime += (Date.now() - renderStart);
@@ -524,21 +520,10 @@ var ReactComponent = {
       }
 
       var injectionStart = Date.now();
-      // Asynchronously inject markup by ensuring that the container is not in
-      // the document when settings its `innerHTML`.
-      var parent = container.parentNode;
-      if (parent) {
-        var next = container.nextSibling;
-        parent.removeChild(container);
-        container.innerHTML = markup;
-        if (next) {
-          parent.insertBefore(container, next);
-        } else {
-          parent.appendChild(container);
-        }
-      } else {
-        container.innerHTML = markup;
-      }
+      ReactComponent.DOMIDOperations.updateInnerHTMLByContainerID(
+        containerID,
+        markup
+      );
       ReactMount.totalInjectionTime += (Date.now() - injectionStart);
     },
 
