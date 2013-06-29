@@ -2,6 +2,8 @@
  * @jsx React.DOM
  */
 
+// todo: multiple styleRefs? how to reflect modes?
+
 // util
 function copyProperties(dst, src) {
   for (var k in src) {
@@ -11,21 +13,21 @@ function copyProperties(dst, src) {
   }
 }
 
-function clausesMatch(pathClause, selectorClause) {
-  console.log(pathClause, selectorClause);
-  return pathClause === selectorClause;
-  /*
-  var pathParts = pathClause.split('/');
-  var selectorParts = selectorClause.split('/');
-
-  if (pathClause.indexOf('/') === -1) {
-    // TODO: get rid of this capability?
-    return selectorParts[1] === '*';
+var GlobalStyleRepository = {
+  styles: {},
+  registerProvider: function(component) {
+    // TODO: build in reconciliation here. That's why we deal with instances, not constructors.
+    if (component.styles) {
+      this.styles[component.constructor.displayName] = component.styles;
+    }
+  },
+  unregisterProvider: function(component) {
+    // who gives a crap, right now.
   }
+};
 
-  // TODO: get rid of
-  return pathParts[0] === selectorParts[0] && (pathParts[1] === selectorParts[1] || selectorParts[1] === '*');
-  */
+function clausesMatch(pathClause, selectorClause) {
+  return pathClause === selectorClause;
 }
 
 function matchPathWithSelector(path, selector) {
@@ -43,7 +45,7 @@ function matchPathWithSelector(path, selector) {
 
 function _calcStyle(computed, path, styles) {
   for (var i = path.length - 1; i >= 0; i--) {
-    var component = path.split('/')[0];
+    var component = path[i].split('/')[0];
     if (!styles[component]) {
       continue;
     }
@@ -52,7 +54,7 @@ function _calcStyle(computed, path, styles) {
         continue;
       }
       selectors.split(',').map(function(selector) {
-        if (matchPathWithSelector(path, selector)) {
+        if (matchPathWithSelector(path, selector.split(' '))) {
           copyProperties(computed, styles[component][selectors]);
         }
       });
@@ -60,16 +62,18 @@ function _calcStyle(computed, path, styles) {
   }
 }
 
-function calcStyle(path, styles, baseStyles) {
+function calcStyle(path, styles) {
   var computed = {};
-  _calcStyle(computed, path, baseStyles);
-  _calcstyle(computed, path, styles);
+  _calcStyle(computed, path, styles);
   return computed;
 }
 
 var StylableMixin = {
-  computeStyle: function(style, baseStyle) {
-    throw new Error('not implemented...yet.');
+  computeStyle: function() {
+    if (!this.getFullStyleRef()) {
+      return null;
+    }
+    return calcStyle(this.getStylePath(), GlobalStyleRepository.styles);
   },
   getFullStyleRef: function() {
     if (!this.props.styleRef) {
@@ -98,25 +102,81 @@ var StylableMixin = {
 
     path.reverse();
     return path;
+  },
+  register: function() {
+    GlobalStyleRepository.registerProvider(this);
+  },
+  componentWillMount: function() {
+    this.register();
+  },
+  componentDidUpdate: function() {
+    // with batching this won't be a perf hit really!
+    this.register();
+  },
+  componentWillUnmount: function() {
+    GlobalStyleRepository.unregisterProvider(this);
   }
 };
 
+function getStylableNativeComponent(key, nativeComponent) {
+  return React.createClass({
+    displayName: key,
+    mixins: [StylableMixin],
+    render: function() {
+      return this.transferPropsTo(<nativeComponent style={this.computeStyle()}>{this.props.children}</nativeComponent>);
+    }
+  });
+}
+
+function patchDOM() {
+  for (var key in React.DOM) {
+    if (React.DOM.hasOwnProperty(key)) {
+      React.DOM[key] = getStylableNativeComponent(key, React.DOM[key]);
+    }
+  }
+}
+
+function patchReact() {
+  var createClass = React.createClass;
+  React.createClass = function(d) {
+    if (!d.mixins) {
+      d.mixins = [];
+    }
+    d.mixins.push(StylableMixin);
+    return createClass(d);
+  };
+}
+
+function patch() {
+  patchDOM();
+  patchReact();
+}
+
+patch();
+
 var Child = React.createClass({
-  mixins: [StylableMixin],
+  styles: {
+    'Child/thediv': {
+      color: 'blue'
+    }
+  },
   render: function() {
-    return <div>My path is {this.getStylePath().join(' ')}</div>;
+    return <div styleRef="thediv">My path is {this.getStylePath().join(' ')}</div>;
   }
 });
 
 var Parent = React.createClass({
-  mixins: [StylableMixin],
   render: function() {
     return <Child styleRef="child" />;
   }
 });
 
 var ExampleApplication = React.createClass({
-  mixins: [StylableMixin],
+  styles: {
+    'Child/thedivx': {
+      color: 'red'
+    }
+  },
   render: function() {
     return <Parent styleRef="parent" />;
   }
