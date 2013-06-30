@@ -20,6 +20,7 @@
 
 "use strict";
 
+var ExecutionEnvironment = require('ExecutionEnvironment');
 var ReactCurrentOwner = require('ReactCurrentOwner');
 var ReactDOMIDOperations = require('ReactDOMIDOperations');
 var ReactID = require('ReactID');
@@ -281,6 +282,10 @@ var ReactComponent = {
      * @protected
      */
     getDOMNode: function() {
+      invariant(
+        ExecutionEnvironment.canUseDOM,
+        'getDOMNode(): Cannot call getDOMNode() in a web worker.'
+      );
       invariant(
         this.isMounted(),
         'getDOMNode(): A component must be mounted to have a DOM node.'

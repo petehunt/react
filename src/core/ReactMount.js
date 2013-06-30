@@ -229,6 +229,7 @@ var ReactMount = {
         // No valid "reactRoot" ID found, create one.
         reactRootID = ReactInstanceHandles.createReactRootID();
       }
+      debugger;
       containersByReactRootID[reactRootID] = container;
       cb(reactRootID);
     });
