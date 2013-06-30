@@ -125,7 +125,7 @@ if (ExecutionEnvironment.isInWorker) {
 
 module.exports = {
   runsInUI: runsInUI,
-  runsInWorker: runsInWorker
+  runsInWorker: runsInWorker,
   init: init
 };
 

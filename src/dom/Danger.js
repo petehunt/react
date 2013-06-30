@@ -21,6 +21,7 @@
 "use strict";
 
 var ExecutionEnvironment = require('ExecutionEnvironment');
+var ReactWorker = require('ReactWorker');
 
 var throwIf = require('throwIf');
 
@@ -118,7 +119,7 @@ function inefficientlyInsertHTMLCollectionAfter(
  * @param {string} markup Markup to dangerously insert.
  * @param {number} index Position to insert markup at.
  */
-function dangerouslyInsertMarkupAt(parentNode, markup, index) {
+var dangerouslyInsertMarkupAt = ReactWorker.runsInUI(function(parentNode, markup, index) {
   if (__DEV__) {
     validateMarkupParams(parentNode, markup);
   }
@@ -127,7 +128,7 @@ function dangerouslyInsertMarkupAt(parentNode, markup, index) {
   var htmlCollection = parentDummy.childNodes;
   var afterNode = index ? parentNode.childNodes[index - 1] : null;
   inefficientlyInsertHTMLCollectionAfter(parentNode, htmlCollection, afterNode);
-}
+});
 
 /**
  * Replaces a node with a string of markup at its current position within its
@@ -138,7 +139,7 @@ function dangerouslyInsertMarkupAt(parentNode, markup, index) {
  * @param {Element} childNode Child node to replace.
  * @param {string} markup Markup to dangerously replace child with.
  */
-function dangerouslyReplaceNodeWithMarkup(childNode, markup) {
+var dangerouslyReplaceNodeWithMarkup = ReactWorker.runsInUI(function(childNode, markup) {
   var parentNode = childNode.parentNode;
   if (__DEV__) {
     validateMarkupParams(parentNode, markup);
@@ -150,7 +151,7 @@ function dangerouslyReplaceNodeWithMarkup(childNode, markup) {
     throwIf(htmlCollection.length !== 1, NO_MULTI_MARKUP);
   }
   parentNode.replaceChild(htmlCollection[0], childNode);
-}
+});
 
 var Danger = {
   dangerouslyInsertMarkupAt: dangerouslyInsertMarkupAt,
