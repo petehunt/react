@@ -26,6 +26,7 @@ var DOMChildrenOperations = require('DOMChildrenOperations');
 var DOMPropertyOperations = require('DOMPropertyOperations');
 var ReactID = require('ReactID');
 var ReactContainer = require('ReactContainer');
+var ReactWorker = require('ReactWorker');
 
 var getTextContentAccessor = require('getTextContentAccessor');
 var invariant = require('invariant');
@@ -66,7 +67,7 @@ var ReactDOMIDOperations = {
    * @param {*} value New value of the property.
    * @internal
    */
-  updatePropertyByID: function(id, name, value) {
+  updatePropertyByID: ReactWorker.runsInUI(function(id, name, value) {
     var node = ReactID.getNode(id);
     invariant(
       !INVALID_PROPERTY_ERRORS.hasOwnProperty(name),
@@ -74,7 +75,7 @@ var ReactDOMIDOperations = {
       INVALID_PROPERTY_ERRORS[name]
     );
     DOMPropertyOperations.setValueForProperty(node, name, value);
-  },
+  }),
 
   /**
    * Updates a DOM node to remove a property. This should only be used to remove
@@ -84,7 +85,7 @@ var ReactDOMIDOperations = {
    * @param {string} name A property name to remove, see `DOMProperty`.
    * @internal
    */
-  deletePropertyByID: function(id, name, value) {
+  deletePropertyByID: ReactWorker.runsInUI(function(id, name, value) {
     var node = ReactID.getNode(id);
     invariant(
       !INVALID_PROPERTY_ERRORS.hasOwnProperty(name),
@@ -92,7 +93,7 @@ var ReactDOMIDOperations = {
       INVALID_PROPERTY_ERRORS[name]
     );
     DOMPropertyOperations.deleteValueForProperty(node, name, value);
-  },
+  }),
 
   /**
    * This should almost never be used instead of `updatePropertyByID()` due to
@@ -104,14 +105,14 @@ var ReactDOMIDOperations = {
    * @internal
    * @see {ReactDOMIDOperations.updatePropertyByID}
    */
-  updatePropertiesByID: function(id, properties) {
+  updatePropertiesByID: ReactWorker.runsInUI(function(id, properties) {
     for (var name in properties) {
       if (!properties.hasOwnProperty(name)) {
         continue;
       }
       ReactDOMIDOperations.updatePropertiesByID(id, name, properties[name]);
     }
-  },
+  }),
 
   /**
    * Updates a DOM node with new style values. If a value is specified as '',
@@ -121,10 +122,10 @@ var ReactDOMIDOperations = {
    * @param {object} styles Mapping from styles to values.
    * @internal
    */
-  updateStylesByID: function(id, styles) {
+  updateStylesByID: ReactWorker.runsInUI(function(id, styles) {
     var node = ReactID.getNode(id);
     CSSPropertyOperations.setValueForStyles(node, styles);
-  },
+  }),
 
   /**
    * Updates a DOM node's innerHTML set by `props.dangerouslySetInnerHTML`.
@@ -133,12 +134,12 @@ var ReactDOMIDOperations = {
    * @param {object} html An HTML object with the `__html` property.
    * @internal
    */
-  updateInnerHTMLByID: function(id, html) {
+  updateInnerHTMLByID: ReactWorker.runsInUI(function(id, html) {
     var node = ReactID.getNode(id);
     // HACK: IE8- normalize whitespace in innerHTML, removing leading spaces.
     // @see quirksmode.org/bugreports/archives/2004/11/innerhtml_and_t.html
     node.innerHTML = (html && html.__html || '').replace(/^ /g, '&nbsp;');
-  },
+  }),
 
   /**
    * Set innerHTML on a node by ID. This is reserved for big blocks of markup
@@ -153,7 +154,7 @@ var ReactDOMIDOperations = {
    * @param {string} html A string of HTML.
    * @internal
    */
-  updateInnerHTMLByContainerID: function(id, html) {
+  updateInnerHTMLByContainerID: ReactWorker.runsInUI(function(id, html) {
     // Asynchronously inject markup by ensuring that the container is not in
     // the document when setting its `innerHTML`.
     var container = ReactContainer.getContainerByID(id);
@@ -174,7 +175,7 @@ var ReactDOMIDOperations = {
     } else {
       container.innerHTML = html;
     }
-  },
+  }),
 
   /**
    * Updates a DOM node's text content set by `props.content`.
@@ -183,10 +184,10 @@ var ReactDOMIDOperations = {
    * @param {string} content Text content.
    * @internal
    */
-  updateTextContentByID: function(id, content) {
+  updateTextContentByID: ReactWorker.runsInUI(function(id, content) {
     var node = ReactID.getNode(id);
     node[textContentAccessor] = content;
-  },
+  }),
 
   /**
    * Replaces a DOM node that exists in the document with markup.
@@ -196,26 +197,26 @@ var ReactDOMIDOperations = {
    * @internal
    * @see {Danger.dangerouslyReplaceNodeWithMarkup}
    */
-  dangerouslyReplaceNodeWithMarkupByID: function(id, markup) {
+  dangerouslyReplaceNodeWithMarkupByID: ReactWorker.runsInUI(function(id, markup) {
     var node = ReactID.getNode(id);
     DOMChildrenOperations.dangerouslyReplaceNodeWithMarkup(node, markup);
     ReactID.purgeEntireCache();
-  },
+  }),
 
   /**
    * TODO: We only actually *need* to purge the cache when we remove elements.
    *       Detect if any elements were removed instead of blindly purging.
    */
-  manageChildrenByParentID: function(parentID, domOperations) {
+  manageChildrenByParentID: ReactWorker.runsInUI(function(parentID, domOperations) {
     var parent = ReactID.getNode(parentID);
     DOMChildrenOperations.manageChildren(parent, domOperations);
     ReactID.purgeEntireCache();
-  },
+  }),
 
-  setTextNodeValueAtIndexByParentID: function(parentID, index, value) {
+  setTextNodeValueAtIndexByParentID: ReactWorker.runsInUI(function(parentID, index, value) {
     var parent = ReactID.getNode(parentID);
     DOMChildrenOperations.setTextNodeValueAtIndex(parent, index, value);
-  }
+  })
 
 };
 
