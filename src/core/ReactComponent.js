@@ -530,17 +530,14 @@ var ReactComponent = {
     /**
      * Unmounts this component and removes it from the DOM.
      *
-     * @param {DOMElement} container DOM element to unmount from.
+     * @param {string} container ID to unmount from.
      * @final
      * @internal
      * @see {ReactMount.unmountAndReleaseReactRootNode}
      */
-    unmountComponentFromNode: function(container) {
+    unmountComponentFromNode: function(containerID) {
       this.unmountComponent();
-      // http://jsperf.com/emptying-a-node
-      while (container.lastChild) {
-        container.removeChild(container.lastChild);
-      }
+      ReactComponent.DOMIDOperations.emptyNodeByContainerID(containerID);
     },
 
     /**
