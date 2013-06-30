@@ -104,7 +104,7 @@ var ReactMount = {
    * @return {string} reactRoot ID prefix
    */
   _registerComponent: function(nextComponent, container) {
-    ReactMount.prepareTopLevelEvents(ReactEventTopLevelCallback);
+    //ReactMount.prepareTopLevelEvents(ReactEventTopLevelCallback);
 
     var reactRootID = ReactMount.registerContainer(container);
     instanceByReactRootID[reactRootID] = nextComponent;
@@ -148,29 +148,30 @@ var ReactMount = {
    * @return {ReactComponent} Component instance rendered in `container`.
    */
   renderComponent: function(nextComponent, container) {
-    var registeredComponent = instanceByReactRootID[
-      ReactContainer.getReactRootID(container)
-    ];
+    if (false) {
+      var registeredComponent = instanceByReactRootID[
+        ReactContainer.getReactRootID(container)
+      ];
 
-    if (registeredComponent) {
-      if (registeredComponent.constructor === nextComponent.constructor) {
-        return ReactMount._updateRootComponent(
-          registeredComponent,
-          nextComponent,
-          container
-        );
-      } else {
-        ReactMount.unmountAndReleaseReactRootNode(container);
+      if (registeredComponent) {
+        if (registeredComponent.constructor === nextComponent.constructor) {
+          return ReactMount._updateRootComponent(
+            registeredComponent,
+            nextComponent,
+            container
+          );
+        } else {
+          ReactMount.unmountAndReleaseReactRootNode(container);
+        }
       }
+
+      var shouldReuseMarkup =
+        ReactContainer.hasReactMarkup(container) && !registeredComponent;
     }
-
-    var shouldReuseMarkup =
-      ReactContainer.hasReactMarkup(container) && !registeredComponent;
-
     return ReactMount._renderNewRootComponent(
       nextComponent,
       container,
-      shouldReuseMarkup
+      false //shouldReuseMarkup
     );
   },
 

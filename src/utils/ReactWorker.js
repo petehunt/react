@@ -100,7 +100,7 @@ function handleMessage(msg, reply) {
   }
 }
 
-function init(path) {
+function initWorker(path) {
   worker = new Worker(path);
   worker.onmessage = function(event) {
     console.log(event);
@@ -126,6 +126,6 @@ if (ExecutionEnvironment.isInWorker) {
 module.exports = {
   runsInUI: runsInUI,
   runsInWorker: runsInWorker,
-  init: init
+  initWorker: initWorker
 };
 
