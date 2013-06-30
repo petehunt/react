@@ -72,7 +72,7 @@ function callInUI(key, args, cb) {
     cb(r);
     return;
   }
-  self.postMessage(['call', expr, registerCallback(cb)]);
+  self.postMessage(['call', [key, args], registerCallback(cb)]);
 }
 
 function callInWorker(key, args, cb) {
@@ -88,12 +88,12 @@ function callInWorker(key, args, cb) {
     cb(r);
     return;
   }
-  worker.postMessage(['call', expr, registerCallback(cb)]);
+  worker.postMessage(['call', [key, args], registerCallback(cb)]);
 }
 
 function handleMessage(msg, reply) {
-  if (msg[0] === 'eval') {
-    reply(['cb', msg[2], eval(msg[1])]);
+  if (msg[0] === 'call') {
+    reply(['cb', msg[2], functions[msg[1][0]].apply(null, msg[1][1])]);
   } else if (msg[0] === 'cb') {
     callbacks[msg[1]](msg[2]);
     delete callbacks[msg[1]];
