@@ -39,10 +39,6 @@ describe('ReactDOMIDOperations', function() {
     }).toThrow();
 
     expect(
-      ReactID.getNode.argsForCall[0][0]
-    ).toBe('testID');
-
-    expect(
       DOMPropertyOperations.setValueForProperty.callCount
     ).toBe(0);
   });
