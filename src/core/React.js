@@ -24,12 +24,16 @@ var ReactDOM = require('ReactDOM');
 var ReactMount = require('ReactMount');
 var ReactProps = require('ReactProps');
 var ReactServerRendering = require('ReactServerRendering');
+var ReactWorker = require('ReactWorker');
+var ReactContainer = require('ReactContainer');
 
 var ReactDefaultInjection = require('ReactDefaultInjection');
 
 ReactDefaultInjection.inject();
 
 var React = {
+  getRemoteContainerReference: ReactContainer.getRemoteContainerReference,
+  initWorker: ReactWorker.initWorker,
   DOM: ReactDOM,
   Props: ReactProps,
   initializeTouchEvents: function(shouldUseTouch) {

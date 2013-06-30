@@ -10,9 +10,8 @@ var ExampleApplication = React.createClass({
 });
 var start = new Date().getTime();
 var c = ExampleApplication({elapsed: new Date().getTime() - start});
-var remoteNode = {remoteDOMNodeID: 'container'};
+var remoteNode = React.getRemoteContainerReference('container');
 React.renderComponent(c, remoteNode);
-React.Worker.evalInUI("console.log('" + JSON.stringify(remoteNode) + "');");
 
 /*
 setInterval(function() {
