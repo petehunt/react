@@ -111,8 +111,13 @@ function initWorker(path) {
   };
 }
 
+var _consoleLog = runsInUI(function() {
+  console.log.apply(console, arguments);
+});
+
 function workerMain() {
   // webworker main
+  self.console = {log: _consoleLog};
   self.onmessage = function(event) {
     handleMessage(event.data, self.postMessage.bind(self));
   };
