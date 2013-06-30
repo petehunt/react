@@ -195,6 +195,18 @@ var ReactDOMIDOperations = {
     }
   }),
 
+  emptyNodeByContainerID: ReactWorker.runsInUI(function(id) {
+    var container = ReactContainer.getContainerByID(id);
+    invariant(
+      container && container.nodeType === 1,
+      'Target container is not a DOM element.'
+    );
+    // http://jsperf.com/emptying-a-node
+    while (container.lastChild) {
+      container.removeChild(container.lastChild);
+    }
+  }),
+
   /**
    * Updates a DOM node's text content set by `props.content`.
    *

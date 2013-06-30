@@ -236,16 +236,24 @@ var ReactMount = {
    * @return {boolean} True if a component was found in and unmounted from
    *                   `container`
    */
-  unmountAndReleaseReactRootNode: function(container) {
-    var reactRootID = ReactContainer.getReactRootID(container);
-    var component = instanceByReactRootID[reactRootID];
-    if (!component) {
-      return false;
-    }
-    component.unmountComponentFromNode(container);
-    delete instanceByReactRootID[reactRootID];
-    delete containersByReactRootID[reactRootID];
-    return true;
+  unmountAndReleaseReactRootNode: function(container, cb) {
+    cb = cb || emptyFunction;
+    ReactContainer.getReactRootID(container, function(reactRootID) {
+      var component = instanceByReactRootID[reactRootID];
+      if (!component) {
+        cb(false);
+        return;
+      }
+      ReactContainer.performWithCachedContainer(
+        container,
+        function(containerID) {
+          component.unmountComponentFromNode(containerID);
+        }
+      );
+      delete instanceByReactRootID[reactRootID];
+      delete containersByReactRootID[reactRootID];
+      cb(true);
+    });
   },
 
   /**
