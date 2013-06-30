@@ -221,6 +221,7 @@ var ReactMount = {
    * @return {string} The "reactRoot" ID of elements rendered within.
    */
   registerContainer: ReactWorker.runsInUI(function(containerID, cb) {
+    throw new Error('TODO: cb is not passed');
     ReactContainer.getContainerByID(containerID, function(container) {
       ReactContainer.getReactRootID(container, function(reactRootID) {
         if (reactRootID) {
