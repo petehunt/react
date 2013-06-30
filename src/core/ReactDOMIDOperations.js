@@ -169,7 +169,7 @@ var ReactDOMIDOperations = {
    * ReactID abstraction rather than the raw "ID attribute" since this
    * function is used to manage containers (which aren't managed by ReactID).
    *
-   * @param {string} id ID of the node to update.
+   * @param {string} id Raw DOM ID of the node to update.
    * @param {string} html A string of HTML.
    * @internal
    */
