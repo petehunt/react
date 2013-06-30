@@ -11,15 +11,14 @@ var ExampleApplication = React.createClass({
 var start = new Date().getTime();
 var c = ExampleApplication({elapsed: new Date().getTime() - start});
 var remoteNode = React.getRemoteContainerReference('container');
-React.renderComponent(c, remoteNode);
-setTimeout(function() {
-  React.unmountAndReleaseReactRootNode(remoteNode);
-}, 2000);
-/*
+//React.renderComponent(c, remoteNode);
+//setTimeout(function() {
+//  React.unmountAndReleaseReactRootNode(remoteNode);
+//}, 2000);
+
 setInterval(function() {
   React.renderComponent(
     ExampleApplication({elapsed: new Date().getTime() - start}),
-    document.getElementById('container')
+    remoteNode
   );
 }, 50);
-*/

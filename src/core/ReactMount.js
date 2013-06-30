@@ -152,32 +152,37 @@ var ReactMount = {
    * @return {ReactComponent} Component instance rendered in `container`.
    */
   renderComponent: function(nextComponent, container, cb) {
-    if (false) {
-      var registeredComponent = instanceByReactRootID[
-        ReactContainer.getReactRootID(container)
-      ];
+    cb = cb || emptyFunction;
+
+    ReactContainer.getReactRootID(container, function(reactRootID) {
+      var registeredComponent = instanceByReactRootID[reactRootID];
 
       if (registeredComponent) {
         if (registeredComponent.constructor === nextComponent.constructor) {
-          return ReactMount._updateRootComponent(
-            registeredComponent,
-            nextComponent,
-            container
+          cb(
+            ReactMount._updateRootComponent(
+              registeredComponent,
+              nextComponent,
+              container
+            )
           );
+          return;
         } else {
-          ReactMount.unmountAndReleaseReactRootNode(container);
+          ReactMount.unmountAndReleaseReactRootNode(container, cb);
         }
       }
 
-      var shouldReuseMarkup =
-        ReactContainer.hasReactMarkup(container) && !registeredComponent;
-    }
-    ReactMount._renderNewRootComponent(
-      nextComponent,
-      container,
-      false, //shouldReuseMarkup
-      cb || emptyFunction
-    );
+      ReactContainer.hasReactMarkup(container, function(hasReactMarkup) {
+        var shouldReuseMarkup = hasReactMarkup && !registeredComponent;
+
+        ReactMount._renderNewRootComponent(
+          nextComponent,
+          container,
+          shouldReuseMarkup,
+          cb || emptyFunction
+        );
+      });
+    });
   },
 
   /**
