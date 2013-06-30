@@ -105,13 +105,17 @@ function getReactRootID(container, cb) {
     getReactRootIDOfRemoteContainerReference(container, cb);
     return;
   }
+  cb(_getReactRootID(container));
+}
+
+function _getReactRootID(container) {
   var rootElement = getReactRootElementInContainer(container);
   return rootElement && ReactID.getID(rootElement);
 }
 
 var getReactRootIDOfRemoteContainerReference = ReactWorker.runsInUI(
   function(containerReference) {
-    return getReactRootID(resolveRemoteContainerReference(containerReference));
+    return _getReactRootID(resolveRemoteContainerReference(containerReference));
   }
 );
 
