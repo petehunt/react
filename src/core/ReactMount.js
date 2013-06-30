@@ -22,6 +22,7 @@ var ReactContainer = require('ReactContainer');
 var ReactEventEmitter = require('ReactEventEmitter');
 var ReactInstanceHandles = require('ReactInstanceHandles');
 var ReactEventTopLevelCallback = require('ReactEventTopLevelCallback');
+var ReactWorker = require('ReactWorker');
 
 var $ = require('$');
 var emptyFunction = require('emptyFunction');
@@ -104,10 +105,10 @@ var ReactMount = {
    * @param {DOMElement} container container to render into
    * @return {string} reactRoot ID prefix
    */
-  _registerComponent: function(nextComponent, container, cb) {
+  _registerComponent: function(nextComponent, containerID, cb) {
     //ReactMount.prepareTopLevelEvents(ReactEventTopLevelCallback);
 
-    ReactMount.registerContainer(container, function(reactRootID) {
+    ReactMount.registerContainer(containerID, function(reactRootID) {
       instanceByReactRootID[reactRootID] = nextComponent;
       cb(reactRootID);
     });
@@ -125,19 +126,19 @@ var ReactMount = {
       container,
       shouldReuseMarkup,
       cb) {
-    ReactMount._registerComponent(nextComponent, container, function(reactRootID) {
-      ReactContainer.performWithCachedContainer(
-        container,
-        function(containerID) {
+    ReactContainer.performWithCachedContainer(
+      container,
+      function(containerID) {
+        ReactMount._registerComponent(nextComponent, containerID, function(reactRootID) {
           nextComponent.mountComponentIntoNode(
             reactRootID,
             containerID,
             shouldReuseMarkup
           );
-        }
-      );
-      cb(nextComponent);
-    });
+          cb(nextComponent);
+        })
+      }
+    );
   },
 
   /**
@@ -219,21 +220,23 @@ var ReactMount = {
    * @param {DOMElement} container DOM element to register as a container.
    * @return {string} The "reactRoot" ID of elements rendered within.
    */
-  registerContainer: function(container, cb) {
-    ReactContainer.getReactRootID(container, function(reactRootID) {
-      if (reactRootID) {
-        // If one exists, make sure it is a valid "reactRoot" ID.
-        reactRootID = ReactInstanceHandles.getReactRootIDFromNodeID(reactRootID);
-      }
-      if (!reactRootID) {
-        // No valid "reactRoot" ID found, create one.
-        reactRootID = ReactInstanceHandles.createReactRootID();
-      }
-      debugger;
-      containersByReactRootID[reactRootID] = container;
-      cb(reactRootID);
+  registerContainer: ReactWorker.runsInUI(function(containerID, cb) {
+    ReactContainer.getContainerByID(containerID, function(container) {
+      ReactContainer.getReactRootID(container, function(reactRootID) {
+        if (reactRootID) {
+          // If one exists, make sure it is a valid "reactRoot" ID.
+          reactRootID = ReactInstanceHandles.getReactRootIDFromNodeID(reactRootID);
+        }
+        if (!reactRootID) {
+          // No valid "reactRoot" ID found, create one.
+          reactRootID = ReactInstanceHandles.createReactRootID();
+        }
+        debugger;
+        containersByReactRootID[reactRootID] = container;
+        cb(reactRootID);
+      });
     });
-  },
+  }),
 
   /**
    * Unmounts and destroys the React component rendered in the `container`.
