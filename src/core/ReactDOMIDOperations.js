@@ -67,13 +67,23 @@ var ReactDOMIDOperations = {
    * @param {*} value New value of the property.
    * @internal
    */
-  updatePropertyByID: ReactWorker.runsInUI(function(id, name, value) {
-    var node = ReactID.getNode(id);
+  updatePropertyByID: function(id, name, value) {
     invariant(
       !INVALID_PROPERTY_ERRORS.hasOwnProperty(name),
       'updatePropertyByID(...): %s',
       INVALID_PROPERTY_ERRORS[name]
     );
+    this._updatePropertyByID(id, name, value);
+  },
+
+  /*
+   * @param {string} id ID of the node to update.
+   * @param {string} name A valid property name, see `DOMProperty`.
+   * @param {*} value New value of the property.
+   * @internal
+   */
+  _updatePropertyByID: ReactWorker.runsInUI(function(id, name, value) {
+    var node = ReactID.getNode(id);
     DOMPropertyOperations.setValueForProperty(node, name, value);
   }),
 
@@ -85,13 +95,22 @@ var ReactDOMIDOperations = {
    * @param {string} name A property name to remove, see `DOMProperty`.
    * @internal
    */
-  deletePropertyByID: ReactWorker.runsInUI(function(id, name, value) {
-    var node = ReactID.getNode(id);
+  deletePropertyByID: function(id, name, value) {
     invariant(
       !INVALID_PROPERTY_ERRORS.hasOwnProperty(name),
       'updatePropertyByID(...): %s',
       INVALID_PROPERTY_ERRORS[name]
     );
+    this._deletePropertyByID(id, name, value);
+  },
+
+  /**
+   * @param {string} id ID of the node to update.
+   * @param {string} name A property name to remove, see `DOMProperty`.
+   * @internal
+   */
+  _deletePropertyByID: ReactWorker.runsInUI(function(id, name, value) {
+    var node = ReactID.getNode(id);
     DOMPropertyOperations.deleteValueForProperty(node, name, value);
   }),
 
