@@ -65,11 +65,11 @@ function callInUI(key, args, cb) {
   if (ExecutionEnvironment.canUseDOM) {
     var r;
     try {
-      r = functions[key].apply(null, args);
+      args.push(cb);
+      functions[key].apply(null, args);
     } catch (e) {
       cb(null, e);
     }
-    cb(r);
     return;
   }
   self.postMessage(['call', [key, args], registerCallback(cb)]);
@@ -81,11 +81,11 @@ function callInWorker(key, args, cb) {
   if (!ExecutionEnvironment.canUseDOM || !worker) {
     var r;
     try {
-      r = functions[key].apply(null, args);
+      args.push(cb);
+      functions[key].apply(null, args);
     } catch (e) {
       cb(e);
     }
-    cb(r);
     return;
   }
   worker.postMessage(['call', [key, args], registerCallback(cb)]);
