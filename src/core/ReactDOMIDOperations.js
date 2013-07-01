@@ -73,9 +73,6 @@ var ReactDOMIDOperations = {
       'updatePropertyByID(...): %s',
       INVALID_PROPERTY_ERRORS[name]
     );
-    if (!id) {
-      debugger;
-    }
     this._updatePropertyByID(id, name, value);
   },
 

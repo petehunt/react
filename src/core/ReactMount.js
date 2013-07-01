@@ -99,6 +99,10 @@ var ReactMount = {
     return prevComponent;
   },
 
+  _listenForEvents: ReactWorker.runsInUI(function() {
+    ReactMount.prepareTopLevelEvents(ReactEventTopLevelCallback);
+  }),
+
   /**
    * Register a component into the instance map and start the events system.
    * @param {ReactComponent} nextComponent component instance to render
@@ -106,8 +110,7 @@ var ReactMount = {
    * @return {string} reactRoot ID prefix
    */
   _registerComponent: function(nextComponent, containerID, cb) {
-    //ReactMount.prepareTopLevelEvents(ReactEventTopLevelCallback);
-
+    this._listenForEvents();
     ReactMount.registerContainer(containerID, function(reactRootID) {
       instanceByReactRootID[reactRootID] = nextComponent;
       cb(reactRootID);

@@ -23,6 +23,7 @@ var EventPluginRegistry = require('EventPluginRegistry');
 var EventPluginUtils = require('EventPluginUtils');
 var EventPropagators = require('EventPropagators');
 var ExecutionEnvironment = require('ExecutionEnvironment');
+var ReactWorker = require('ReactWorker');
 
 var accumulate = require('accumulate');
 var forEachAccumulated = require('forEachAccumulated');
@@ -167,18 +168,18 @@ var EventPluginHub = {
    * @param {*} events An accumulation of synthetic events.
    * @internal
    */
-  enqueueEvents: function(events) {
+  enqueueEvents: ReactWorker.runsInWorker(function(events) {
     if (events) {
       eventQueue = accumulate(eventQueue, events);
     }
-  },
+  }),
 
   /**
    * Dispatches all synthetic events on the event queue.
    *
    * @internal
    */
-  processEventQueue: function() {
+  processEventQueue: ReactWorker.runsInWorker(function() {
     // Set `eventQueue` to null before processing it so that we can tell if more
     // events get enqueued while processing.
     var processingEventQueue = eventQueue;
@@ -189,7 +190,7 @@ var EventPluginHub = {
       'processEventQueue(): Additional events were enqueued while processing ' +
       'an event queue. Support for this has not yet been implemented.'
     );
-  }
+  })
 
 };
 

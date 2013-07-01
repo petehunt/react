@@ -319,7 +319,26 @@ var ReactEventEmitter = {
       nativeEvent
     );
 
-    // Event queue being processed in the same cycle allows `preventDefault`.
+    function cleanEvent(events) {
+      events.nativeEvent = null;
+      events.currentTarget = null;
+      events.target = null;
+      events.view = null;
+
+      events.isDefaultPrevented = null;
+      events.isPropagationStopped = null;
+      return events;
+    }
+
+    if (events) {
+      // Event queue being processed in the same cycle allows `preventDefault`.
+      if (Array.isArray(events)) {
+        events = events.map(cleanEvent);
+      } else {
+        events = cleanEvent(events);
+      }
+    }
+
     EventPluginHub.enqueueEvents(events);
     EventPluginHub.processEventQueue();
   },
