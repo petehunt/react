@@ -93,10 +93,16 @@ function callInWorker(key, args, cb) {
 
 function handleMessage(msg, reply) {
   if (msg[0] === 'call') {
-    reply(['cb', msg[2], functions[msg[1][0]].apply(null, msg[1][1])]);
+    var functionKey = msg[1][0];
+    var args = msg[1][1];
+    var cbKey = msg[2];
+    args.push(function(value) {
+      reply(['cb', cbKey, value]);
+    });
+    functions[functionKey].apply(null, args)
   } else if (msg[0] === 'cb') {
     callbacks[msg[1]](msg[2]);
-    delete callbacks[msg[1]];
+    callbacks[msg[1]] = null;
   }
 }
 
