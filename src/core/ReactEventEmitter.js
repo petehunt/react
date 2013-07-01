@@ -24,7 +24,6 @@ var EventListener = require('EventListener');
 var EventPluginHub = require('EventPluginHub');
 var ExecutionEnvironment = require('ExecutionEnvironment');
 var ViewportMetrics = require('ViewportMetrics');
-var ReactSerialization = require('ReactSerialization');
 
 var invariant = require('invariant');
 var isEventSupported = require('isEventSupported');

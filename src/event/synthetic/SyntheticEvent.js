@@ -21,7 +21,6 @@
 
 var PooledClass = require('PooledClass');
 
-var emptyFunction = require('emptyFunction');
 var getEventTarget = require('getEventTarget');
 var merge = require('merge');
 var mergeInto = require('mergeInto');
@@ -77,11 +76,11 @@ function SyntheticEvent(dispatchConfig, dispatchMarker, nativeEvent) {
   }
 
   if (nativeEvent.defaultPrevented || nativeEvent.returnValue === false) {
-    this.isDefaultPrevented = emptyFunction.thatReturnsTrue;
+    this._isDefaultPrevented = true;
   } else {
-    this.isDefaultPrevented = emptyFunction.thatReturnsFalse;
+    this._isDefaultPrevented = false;
   }
-  this.isPropagationStopped = emptyFunction.thatReturnsFalse;
+  this._isPropagationStopped = false;
 }
 
 mergeInto(SyntheticEvent.prototype, {
@@ -90,13 +89,30 @@ mergeInto(SyntheticEvent.prototype, {
     this.defaultPrevented = true;
     var event = this.nativeEvent;
     event.preventDefault ? event.preventDefault() : event.returnValue = false;
-    this.isDefaultPrevented = emptyFunction.thatReturnsTrue;
+    this._isDefaultPrevented = true;
   },
 
   stopPropagation: function() {
     var event = this.nativeEvent;
     event.stopPropagation ? event.stopPropagation() : event.cancelBubble = true;
-    this.isPropagationStopped = emptyFunction.thatReturnsTrue;
+    this._isPropagationStopped = true;
+  },
+
+  isDefaultPrevented: function() {
+    return this._isDefaultPrevented;
+  },
+
+  isPropagationStopped: function() {
+    return this._isPropagationStopped;
+  },
+
+  /**
+   * Checks if this event should be released back into the pool.
+   *
+   * @return {boolean} True if this should not be released, false otherwise.
+   */
+  isPersistent: function() {
+    return this._isPersistent;
   },
 
   /**
@@ -105,15 +121,8 @@ mergeInto(SyntheticEvent.prototype, {
    * won't be added back into the pool.
    */
   persist: function() {
-    this.isPersistent = emptyFunction.thatReturnsTrue;
+    this._isPersistent = true;
   },
-
-  /**
-   * Checks if this event should be released back into the pool.
-   *
-   * @return {boolean} True if this should not be released, false otherwise.
-   */
-  isPersistent: emptyFunction.thatReturnsFalse,
 
   /**
    * `PooledClass` looks for `destructor` on each instance it releases.
