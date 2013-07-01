@@ -117,7 +117,7 @@ function initWorker(path) {
 }
 
 var _consoleLog = runsInUI(function() {
-  var args = Array.prototype.slice.call(arguments);
+  var args = ['WORKER:'].concat(Array.prototype.slice.call(arguments));
   console.log.apply(console, args.slice(0, args.length - 1));
 });
 

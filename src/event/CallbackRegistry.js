@@ -40,6 +40,7 @@ var CallbackRegistry = {
    * @param {?function} listener The callback to store.
    */
   putListener: function(id, registrationName, listener) {
+    console.log('listening on', id, registrationName);
     var bankForRegistrationName =
       listenerBank[registrationName] || (listenerBank[registrationName] = {});
     bankForRegistrationName[id] = listener;
@@ -51,6 +52,7 @@ var CallbackRegistry = {
    * @return {?function} The stored callback.
    */
   getListener: function(id, registrationName) {
+    console.log('getListener', id, registrationName, Object.keys(listenerBank[registrationName]));
     var bankForRegistrationName = listenerBank[registrationName];
     return bankForRegistrationName && bankForRegistrationName[id];
   },

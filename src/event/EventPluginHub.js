@@ -169,7 +169,7 @@ var EventPluginHub = {
    * @param {*} events An accumulation of synthetic events.
    * @internal
    */
-  enqueueEvents: ReactWorker.runsInWorker(function(events) {
+  enqueueEvents: ReactWorker.runsInWorker(function(events, cb) {
     if (events) {
       if (Array.isArray(events)) {
         events = events.map(SyntheticEventSerialization.deserialize);
@@ -178,6 +178,7 @@ var EventPluginHub = {
       }
       eventQueue = accumulate(eventQueue, events);
     }
+    cb();
   }),
 
   /**

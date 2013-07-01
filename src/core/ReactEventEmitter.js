@@ -331,8 +331,7 @@ var ReactEventEmitter = {
     }
 
     // Event queue being processed in the same cycle allows `preventDefault`.
-    EventPluginHub.enqueueEvents(events);
-    EventPluginHub.processEventQueue();
+    EventPluginHub.enqueueEvents(events, EventPluginHub.processEventQueue)
   },
 
   registrationNames: EventPluginHub.registrationNames,

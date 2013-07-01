@@ -3,6 +3,7 @@ var ExampleApplication = React.createClass({
     return {count: 0};
   },
   handleClick: function() {
+    console.log('handled click', this.state.count);
     this.setState({count: this.state.count + 1});
   },
   render: function() {
@@ -26,6 +27,7 @@ setTimeout(function() {
 */
 
 /*
+
 setInterval(function() {
   React.renderComponent(
     ExampleApplication({elapsed: new Date().getTime() - start}),
