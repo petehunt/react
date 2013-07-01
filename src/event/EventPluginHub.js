@@ -176,6 +176,7 @@ var EventPluginHub = {
       } else {
         events = SyntheticEventSerialization.deserialize(events);
       }
+      EventPropagators.accumulateTwoPhaseDispatches(events);
       eventQueue = accumulate(eventQueue, events);
     }
     cb();

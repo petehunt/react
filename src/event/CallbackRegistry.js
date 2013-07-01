@@ -52,7 +52,7 @@ var CallbackRegistry = {
    * @return {?function} The stored callback.
    */
   getListener: function(id, registrationName) {
-    console.log('getListener', id, registrationName, Object.keys(listenerBank[registrationName]));
+    //console.log('getListener', id, registrationName, Object.keys(listenerBank[registrationName]));
     var bankForRegistrationName = listenerBank[registrationName];
     return bankForRegistrationName && bankForRegistrationName[id];
   },

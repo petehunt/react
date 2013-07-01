@@ -19,7 +19,6 @@
 "use strict";
 
 var EventConstants = require('EventConstants');
-var EventPropagators = require('EventPropagators');
 var SyntheticEvent = require('SyntheticEvent');
 var SyntheticFocusEvent = require('SyntheticFocusEvent');
 var SyntheticKeyboardEvent = require('SyntheticKeyboardEvent');
@@ -326,7 +325,6 @@ var SimpleEventPlugin = {
       topLevelTargetID,
       nativeEvent
     );
-    EventPropagators.accumulateTwoPhaseDispatches(event);
     return event;
   }
 
