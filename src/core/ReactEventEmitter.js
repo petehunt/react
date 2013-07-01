@@ -23,6 +23,7 @@ var EventConstants = require('EventConstants');
 var EventListener = require('EventListener');
 var EventPluginHub = require('EventPluginHub');
 var ExecutionEnvironment = require('ExecutionEnvironment');
+var SyntheticEventSerialization = require('SyntheticEventSerialization');
 var ViewportMetrics = require('ViewportMetrics');
 
 var invariant = require('invariant');
@@ -319,26 +320,17 @@ var ReactEventEmitter = {
       nativeEvent
     );
 
-    function cleanEvent(events) {
-      events.nativeEvent = null;
-      events.currentTarget = null;
-      events.target = null;
-      events.view = null;
-
-      events.isDefaultPrevented = null;
-      events.isPropagationStopped = null;
-      return events;
-    }
-
+    // TODO: I broke preventDefault().
+    // TODO: do this only if running in hybrid env
     if (events) {
-      // Event queue being processed in the same cycle allows `preventDefault`.
       if (Array.isArray(events)) {
-        events = events.map(cleanEvent);
+        events = events.map(SyntheticEventSerialization.serialize);
       } else {
-        events = cleanEvent(events);
+        events = SyntheticEventSerialization.serialize(events);
       }
     }
 
+    // Event queue being processed in the same cycle allows `preventDefault`.
     EventPluginHub.enqueueEvents(events);
     EventPluginHub.processEventQueue();
   },

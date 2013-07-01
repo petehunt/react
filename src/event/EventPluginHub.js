@@ -24,6 +24,7 @@ var EventPluginUtils = require('EventPluginUtils');
 var EventPropagators = require('EventPropagators');
 var ExecutionEnvironment = require('ExecutionEnvironment');
 var ReactWorker = require('ReactWorker');
+var SyntheticEventSerialization = require('SyntheticEventSerialization');
 
 var accumulate = require('accumulate');
 var forEachAccumulated = require('forEachAccumulated');
@@ -169,6 +170,13 @@ var EventPluginHub = {
    * @internal
    */
   enqueueEvents: ReactWorker.runsInWorker(function(events) {
+    if (events) {
+      if (Array.isArray(events)) {
+        events = events.map(SyntheticEventSerialization.deserialize);
+      } else {
+        events = SyntheticEventSerialization.deserialize(events);
+      }
+    }
     if (events) {
       eventQueue = accumulate(eventQueue, events);
     }
