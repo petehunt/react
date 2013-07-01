@@ -221,8 +221,9 @@ var ReactMount = {
    * @return {string} The "reactRoot" ID of elements rendered within.
    */
   registerContainer: ReactWorker.runsInUI(function(containerID, cb) {
-    throw new Error('TODO: cb is not passed');
+    console.log('registerContainer');
     ReactContainer.getContainerByID(containerID, function(container) {
+      console.log('getContainerByID');
       ReactContainer.getReactRootID(container, function(reactRootID) {
         if (reactRootID) {
           // If one exists, make sure it is a valid "reactRoot" ID.
@@ -232,8 +233,8 @@ var ReactMount = {
           // No valid "reactRoot" ID found, create one.
           reactRootID = ReactInstanceHandles.createReactRootID();
         }
-        debugger;
         containersByReactRootID[reactRootID] = container;
+        console.log('calling back with', reactRootID);
         cb(reactRootID);
       });
     });
