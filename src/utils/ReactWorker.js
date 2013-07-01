@@ -17,7 +17,6 @@ var worker = null;
 var callbackIDs = 0;
 var callbacks = {};
 
-// These are permanent
 var functions = {};
 var functionIDs = 0;
 
@@ -33,7 +32,6 @@ function getFunctionProxy(key, runsInUI) {
     var lastArg = args.length > 0 ? args[args.length - 1] : null;
     var callback = null;
     if (typeof lastArg === 'function') {
-      // it's a callback
       callback = lastArg;
       args = args.slice(0, args.length - 1);
     }
@@ -45,10 +43,16 @@ function getFunctionProxy(key, runsInUI) {
   };
 }
 
+/**
+ * Specify that func should only be run in the UI thread
+ */
 function runsInUI(func) {
   return getFunctionProxy(registerFunction(func), true);
 }
 
+/**
+ * Specify that func should only be run in the worker.
+ */
 function runsInWorker(func) {
   return getFunctionProxy(registerFunction(func), false);
 }
@@ -106,6 +110,10 @@ function handleMessage(msg, reply) {
   }
 }
 
+/**
+ * Provide a URL to a .js file which will run in a web worker. It's
+ * expected that this web worker will import React on startup.
+ */
 function initWorker(path) {
   worker = new Worker(path);
   worker.onmessage = function(event) {
