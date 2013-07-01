@@ -20,7 +20,7 @@
 
 "use strict";
 
-var canUseDOM = typeof window !== 'undefined';
+var canUseDOM = typeof document !== 'undefined';
 
 /**
  * Simple, lightweight module assisting with the detection and context of
