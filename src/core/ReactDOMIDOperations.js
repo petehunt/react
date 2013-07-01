@@ -76,7 +76,6 @@ var ReactDOMIDOperations = {
     if (!id) {
       debugger;
     }
-    console.log('updatePropertyByID()', id, name, value);
     this._updatePropertyByID(id, name, value);
   },
 
@@ -87,7 +86,6 @@ var ReactDOMIDOperations = {
    * @internal
    */
   _updatePropertyByID: ReactWorker.runsInUI(function(id, name, value) {
-    console.log('_updatePropertyByID()', id, name, value);
     var node = ReactID.getNode(id);
     DOMPropertyOperations.setValueForProperty(node, name, value);
   }),

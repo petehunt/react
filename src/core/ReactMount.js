@@ -221,22 +221,18 @@ var ReactMount = {
    * @return {string} The "reactRoot" ID of elements rendered within.
    */
   registerContainer: ReactWorker.runsInUI(function(containerID, cb) {
-    console.log('registerContainer');
-    ReactContainer.getContainerByID(containerID, function(container) {
-      console.log('getContainerByID');
-      ReactContainer.getReactRootID(container, function(reactRootID) {
-        if (reactRootID) {
-          // If one exists, make sure it is a valid "reactRoot" ID.
-          reactRootID = ReactInstanceHandles.getReactRootIDFromNodeID(reactRootID);
-        }
-        if (!reactRootID) {
-          // No valid "reactRoot" ID found, create one.
-          reactRootID = ReactInstanceHandles.createReactRootID();
-        }
-        containersByReactRootID[reactRootID] = container;
-        console.log('calling back with', reactRootID);
-        cb(reactRootID);
-      });
+    var container = ReactContainer.getContainerByID(containerID);
+    ReactContainer.getReactRootID(container, function(reactRootID) {
+      if (reactRootID) {
+        // If one exists, make sure it is a valid "reactRoot" ID.
+        reactRootID = ReactInstanceHandles.getReactRootIDFromNodeID(reactRootID);
+      }
+      if (!reactRootID) {
+        // No valid "reactRoot" ID found, create one.
+        reactRootID = ReactInstanceHandles.createReactRootID();
+      }
+      containersByReactRootID[reactRootID] = container;
+      cb(reactRootID);
     });
   }),
 

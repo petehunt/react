@@ -114,8 +114,8 @@ function _getReactRootID(container) {
 }
 
 var getReactRootIDOfRemoteContainerReference = ReactWorker.runsInUI(
-  function(containerReference) {
-    return _getReactRootID(resolveRemoteContainerReference(containerReference));
+  function(containerReference, cb) {
+    cb(_getReactRootID(resolveRemoteContainerReference(containerReference)));
   }
 );
 
@@ -132,8 +132,8 @@ function hasReactMarkup(container, cb) {
 }
 
 var getRemoteContainerReferenceHasReactMarkup = ReactWorker.runsInUI(
-  function(containerReference) {
-    return _hasReactMarkup(resolveRemoteContainerReference(containerReference));
+  function(containerReference, cb) {
+    cb(_hasReactMarkup(resolveRemoteContainerReference(containerReference)));
   }
 );
 
