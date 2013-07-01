@@ -176,8 +176,6 @@ var EventPluginHub = {
       } else {
         events = SyntheticEventSerialization.deserialize(events);
       }
-    }
-    if (events) {
       eventQueue = accumulate(eventQueue, events);
     }
   }),

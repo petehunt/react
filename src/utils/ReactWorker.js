@@ -109,16 +109,16 @@ function handleMessage(msg, reply) {
 function initWorker(path) {
   worker = new Worker(path);
   worker.onmessage = function(event) {
-    console.log(event);
     handleMessage(event.data, worker.postMessage.bind(worker));
   };
   worker.onerror = function(event) {
-    console.log(event);
+    console.error(event);
   };
 }
 
 var _consoleLog = runsInUI(function() {
-  console.log.apply(console, arguments);
+  var args = Array.prototype.slice.call(arguments);
+  console.log.apply(console, args.slice(0, args.length - 1));
 });
 
 function workerMain() {
