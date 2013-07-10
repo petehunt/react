@@ -20,26 +20,21 @@
 
 var invariant = require('invariant');
 
-var isBatchingUpdates = false;
-
 var dirtyComponents = [];
 
-/**
- * Call the provided function in a context within which calls to `setState` and
- * friends are batched such that components aren't updated unnecessarily.
- */
+var batchingStrategy = null;
+
+function ensureBatchingStrategy() {
+  invariant(batchingStrategy, 'You must inject a batching strategy');
+}
+
 function batchedUpdates(callback) {
-  if (isBatchingUpdates) {
-    // We're already executing in an environment where updates will be batched,
-    // so this is a no-op.
-    callback();
-    return;
-  }
+  ensureBatchingStrategy();
+  batchingStrategy.batchedUpdates(callback);
+}
 
-  isBatchingUpdates = true;
-
+function flushBatchedUpdates() {
   try {
-    callback();
     // TODO: Sort components by depth such that parent components update first
     for (var i = 0; i < dirtyComponents.length; i++) {
       // If a component is unmounted before pending changes apply, ignore them
@@ -64,7 +59,6 @@ function batchedUpdates(callback) {
     throw error;
   } finally {
     dirtyComponents.length = 0;
-    isBatchingUpdates = false;
   }
 }
 
@@ -79,8 +73,9 @@ function enqueueUpdate(component, callback) {
     '`setState`, `replaceState`, or `forceUpdate` with a callback that ' +
     'isn\'t callable.'
   );
+  ensureBatchingStrategy();
 
-  if (!isBatchingUpdates) {
+  if (!batchingStrategy.isBatchingUpdates) {
     component.performUpdateIfNecessary();
     callback && callback();
     return;
@@ -97,9 +92,29 @@ function enqueueUpdate(component, callback) {
   }
 }
 
+var ReactUpdatesInjection = {
+  injectBatchingStrategy: function(_batchingStrategy) {
+    invariant(
+      _batchingStrategy,
+      'Must provide a batching strategy'
+    );
+    invariant(
+      typeof _batchingStrategy.batchedUpdates === 'function',
+      'Must provide a batchedUpdates() function'
+    );
+    invariant(
+      typeof _batchingStrategy.isBatchingUpdates === 'boolean',
+      'Must provide an isBatchingUpdates boolean attribute'
+    );
+    batchingStrategy = _batchingStrategy;
+  }
+};
+
 var ReactUpdates = {
   batchedUpdates: batchedUpdates,
-  enqueueUpdate: enqueueUpdate
+  enqueueUpdate: enqueueUpdate,
+  flushBatchedUpdates: flushBatchedUpdates,
+  injection: ReactUpdatesInjection
 };
 
 module.exports = ReactUpdates;

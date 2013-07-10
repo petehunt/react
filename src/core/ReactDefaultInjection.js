@@ -33,6 +33,9 @@ var EventPluginHub = require('EventPluginHub');
 var ReactInstanceHandles = require('ReactInstanceHandles');
 var SimpleEventPlugin = require('SimpleEventPlugin');
 
+var ReactUpdates = require('ReactUpdates');
+var ReactDefaultBatchingStrategy = require('ReactDefaultBatchingStrategy');
+
 function inject() {
   /**
    * Inject module for resolving DOM hierarchy and plugin ordering.
@@ -57,6 +60,7 @@ function inject() {
   });
 
   DOMProperty.injection.injectDOMPropertyConfig(DefaultDOMPropertyConfig);
+  ReactUpdates.injection.injectBatchingStrategy(ReactDefaultBatchingStrategy);
 }
 
 module.exports = {
