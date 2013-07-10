@@ -34,7 +34,8 @@ var ReactInstanceHandles = require('ReactInstanceHandles');
 var SimpleEventPlugin = require('SimpleEventPlugin');
 
 var ReactUpdates = require('ReactUpdates');
-var ReactDefaultBatchingStrategy = require('ReactDefaultBatchingStrategy');
+//var ReactDefaultBatchingStrategy = require('ReactDefaultBatchingStrategy');
+var ReactAnimationFrameBatchingStrategy = require('ReactAnimationFrameBatchingStrategy');
 
 function inject() {
   /**
@@ -60,7 +61,9 @@ function inject() {
   });
 
   DOMProperty.injection.injectDOMPropertyConfig(DefaultDOMPropertyConfig);
-  ReactUpdates.injection.injectBatchingStrategy(ReactDefaultBatchingStrategy);
+  //ReactUpdates.injection.injectBatchingStrategy(ReactDefaultBatchingStrategy);
+  ReactUpdates.injection.injectBatchingStrategy(ReactAnimationFrameBatchingStrategy);
+  ReactAnimationFrameBatchingStrategy.start();
 }
 
 module.exports = {
