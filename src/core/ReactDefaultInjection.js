@@ -33,7 +33,7 @@ var DefaultDOMPropertyConfig = require('DefaultDOMPropertyConfig');
 var DOMProperty = require('DOMProperty');
 
 var DefaultEventPluginOrder = require('DefaultEventPluginOrder');
-//var EnterLeaveEventPlugin = require('EnterLeaveEventPlugin');
+var EnterLeaveEventPlugin = require('EnterLeaveEventPlugin');
 var ChangeEventPlugin = require('ChangeEventPlugin');
 var EventPluginHub = require('EventPluginHub');
 var ReactInstanceHandles = require('ReactInstanceHandles');
@@ -57,7 +57,7 @@ function inject() {
    */
   EventPluginHub.injection.injectEventPluginsByName({
     'SimpleEventPlugin': SimpleEventPlugin,
-//    'EnterLeaveEventPlugin': EnterLeaveEventPlugin,
+    'EnterLeaveEventPlugin': EnterLeaveEventPlugin,
     'ChangeEventPlugin': ChangeEventPlugin,
     'MobileSafariClickEventPlugin': MobileSafariClickEventPlugin
   });
