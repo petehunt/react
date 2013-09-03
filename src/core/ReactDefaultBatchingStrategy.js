@@ -67,7 +67,7 @@ var ReactDefaultBatchingStrategy = {
     if (alreadyBatchingUpdates) {
       callback(param);
     } else {
-      transaction.perform(callback, param);
+      transaction.perform(callback, null, param);
     }
   }
 };

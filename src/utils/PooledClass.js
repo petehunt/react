@@ -49,7 +49,6 @@ var twoArgumentPooler = function(a1, a2) {
 
 var threeArgumentPooler = function(a1, a2, a3) {
   var Klass = this;
-  console.log('this is', Klass.instancePool.length);
   if (Klass.instancePool.length) {
     var instance = Klass.instancePool.pop();
     Klass.call(instance, a1, a2, a3);

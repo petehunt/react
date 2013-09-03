@@ -50,7 +50,6 @@ var executeDispatchesAndRelease = function(event) {
     }
     EventPluginUtils.executeDispatchesInOrder(event, executeDispatch);
 
-    console.log('and we have reached the end', event.isPersistent());
     if (!event.isPersistent()) {
       event.constructor.release(event);
     }
@@ -172,9 +171,7 @@ var EventPluginHub = {
   processEventQueue: function() {
     // Set `eventQueue` to null before processing it so that we can tell if more
     // events get enqueued while processing.
-    console.log('processing event queue');
     var processingEventQueue = eventQueue;
-    console.log('queue is', processingEventQueue);
     eventQueue = null;
     forEachAccumulated(processingEventQueue, executeDispatchesAndRelease);
     invariant(
