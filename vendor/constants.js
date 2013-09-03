@@ -57,7 +57,7 @@ var ConstantVisitor = recast.Visitor.extend({
       }
     }
   },
-
+/*
   // memory leak finder
   visitNewExpression: function(expr) {
     this.genericVisit(expr);
@@ -98,7 +98,7 @@ var ConstantVisitor = recast.Visitor.extend({
       ),
       [expr]
     );
-  }
+  }*/
 });
 
 if (!module.parent) {
