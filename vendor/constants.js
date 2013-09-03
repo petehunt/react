@@ -68,6 +68,36 @@ var ConstantVisitor = recast.Visitor.extend({
       ),
       [expr]
     );
+  },
+  visitArrayExpression: function(expr) {
+    this.genericVisit(expr);
+    return recast.builder.callExpression(
+      recast.builder.callExpression(
+        recast.builder.identifier('require'),
+        [recast.builder.literal('wrapAllocation')]
+      ),
+      [expr]
+    );
+  },
+  visitObjectExpression: function(expr) {
+    this.genericVisit(expr);
+    return recast.builder.callExpression(
+      recast.builder.callExpression(
+        recast.builder.identifier('require'),
+        [recast.builder.literal('wrapAllocation')]
+      ),
+      [expr]
+    );
+  },
+  visitFunctionExpression: function(expr) {
+    this.genericVisit(expr);
+    return recast.builder.callExpression(
+      recast.builder.callExpression(
+        recast.builder.identifier('require'),
+        [recast.builder.literal('wrapAllocation')]
+      ),
+      [expr]
+    );
   }
 });
 
