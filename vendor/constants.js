@@ -56,6 +56,18 @@ var ConstantVisitor = recast.Visitor.extend({
         this.remove();
       }
     }
+  },
+
+  // memory leak finder
+  visitNewExpression: function(expr) {
+    this.genericVisit(expr);
+    return recast.builder.callExpression(
+      recast.builder.callExpression(
+        recast.builder.identifier('require'),
+        [recast.builder.literal('wrapAllocation')]
+      ),
+      [expr]
+    );
   }
 });
 

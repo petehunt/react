@@ -42,13 +42,10 @@
           return React.DOM.p(null, message);
         }
       });
-      var start = new Date().getTime();
-      setInterval(function() {
-        React.renderComponent(
-          ExampleApplication({elapsed: new Date().getTime() - start}),
-          document.getElementById('container')
-        );
-      }, 50);
+      React.renderComponent(
+        ExampleApplication({elapsed: 0}),
+        document.getElementById('container')
+      );
     </script>
   </body>
 </html>
