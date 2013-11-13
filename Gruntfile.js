@@ -16,7 +16,6 @@ module.exports = function(grunt) {
     copy: require('./grunt/config/copy'),
     jsx: require('./grunt/config/jsx/jsx'),
     browserify: require('./grunt/config/browserify'),
-    webpack: require('./grunt/config/webpack'),
     wrapup: require('./grunt/config/wrapup'),
     populist: require('./grunt/config/populist'),
     phantom: require('./grunt/config/phantom'),
@@ -33,7 +32,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-clean');
   grunt.loadNpmTasks('grunt-compare-size');
   grunt.loadNpmTasks('grunt-contrib-compress');
-  grunt.loadNpmTasks('grunt-webpack');
 
   // Alias 'jshint' to 'lint' to better match the workflow we know
   grunt.registerTask('lint', ['jshint']);
