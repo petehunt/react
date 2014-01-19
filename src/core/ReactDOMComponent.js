@@ -31,7 +31,6 @@ var ReactPerf = require('ReactPerf');
 var escapeTextForBrowser = require('escapeTextForBrowser');
 var invariant = require('invariant');
 var keyOf = require('keyOf');
-var merge = require('merge');
 var mixInto = require('mixInto');
 
 var deleteListener = ReactEventEmitter.deleteListener;
@@ -146,9 +145,6 @@ ReactDOMComponent.Mixin = {
         putListener(this._rootNodeID, propKey, propValue);
       } else {
         if (propKey === STYLE) {
-          if (propValue) {
-            propValue = props.style = merge(props.style);
-          }
           propValue = CSSPropertyOperations.createMarkupForStyles(propValue);
         }
         var markup =
@@ -277,9 +273,6 @@ ReactDOMComponent.Mixin = {
         continue;
       }
       if (propKey === STYLE) {
-        if (nextProp) {
-          nextProp = nextProps.style = merge(nextProp);
-        }
         if (lastProp) {
           // Unset styles on `lastProp` but not on `nextProp`.
           for (styleName in lastProp) {
