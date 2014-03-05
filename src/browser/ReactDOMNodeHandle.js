@@ -26,9 +26,6 @@ var keyMirror = require('keyMirror');
 
 var ELEMENT_NODE_TYPE = 1;
 
-var numContainerIDs = 0;
-var CONTAINER_ID_PREFIX = '.reactContainer.' + Date.now().toString(36) + '.';
-
 var ReactDOMNodeHandleTypes = keyMirror({
   REACT_ID: null,
   REACT_ID_TOP_LEVEL: null,
@@ -51,13 +48,10 @@ var ReactDOMNodeHandle = {
   },
 
   getHandleForContainer: function(domNode) {
-    var id = domNode.id;
-    if (!id || id.length === 0) {
-      id = domNode.id = CONTAINER_ID_PREFIX + (numContainerIDs++);
-    }
+    // TODO: assign a unique ID so this can be passed across worker boundaries.
     return {
       type: ReactDOMNodeHandleTypes.CONTAINER,
-      id: id
+      domNode: domNode
     };
   },
 
@@ -79,7 +73,7 @@ var ReactDOMNodeHandle = {
     } else if (handle.type === ReactDOMNodeHandleTypes.REACT_ID) {
       return ReactDOMNodeMapping.getNode(handle.reactID);
     } else {
-      return document.getElementById(handle.id);
+      return handle.domNode;
     }
   }
 };

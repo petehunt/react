@@ -21,14 +21,14 @@
 
 var mocks = require('mocks');
 
-describe('ReactDOMNodeMapping', function() {
+describe('ReactMount', function() {
   var React = require('React');
-  var ReactDOMNodeMapping = require('ReactDOMNodeMapping');
+  var ReactMount = require('ReactMount');
 
   describe('constructAndRenderComponentByID', function() {
     it('throws if given an id for a component that doesn\'t exist', function() {
       expect(function() {
-        ReactDOMNodeMapping.constructAndRenderComponentByID(
+        ReactMount.constructAndRenderComponentByID(
           function dummyComponentConstructor() {},
           {},
           'SOME_ID_THAT_DOESNT_EXIST'
@@ -41,10 +41,10 @@ describe('ReactDOMNodeMapping', function() {
     var container = document.createElement('container');
     document.documentElement.appendChild(container);
 
-    ReactDOMNodeMapping.renderComponent(<div></div>, container);
+    ReactMount.renderComponent(<div></div>, container);
     expect(container.firstChild.nodeName).toBe('DIV');
 
-    ReactDOMNodeMapping.renderComponent(<span></span>, container);
+    ReactMount.renderComponent(<span></span>, container);
     expect(container.firstChild.nodeName).toBe('SPAN');
   });
 
@@ -65,19 +65,19 @@ describe('ReactDOMNodeMapping', function() {
     expect(mockMount.mock.calls.length).toBe(0);
     expect(mockUnmount.mock.calls.length).toBe(0);
 
-    ReactDOMNodeMapping.renderComponent(<Component text="orange" key="A" />, container);
+    ReactMount.renderComponent(<Component text="orange" key="A" />, container);
     expect(container.firstChild.innerHTML).toBe('orange');
     expect(mockMount.mock.calls.length).toBe(1);
     expect(mockUnmount.mock.calls.length).toBe(0);
 
     // If we change the key, the component is unmounted and remounted
-    ReactDOMNodeMapping.renderComponent(<Component text="green" key="B" />, container);
+    ReactMount.renderComponent(<Component text="green" key="B" />, container);
     expect(container.firstChild.innerHTML).toBe('green');
     expect(mockMount.mock.calls.length).toBe(2);
     expect(mockUnmount.mock.calls.length).toBe(1);
 
     // But if we don't change the key, the component instance is reused
-    ReactDOMNodeMapping.renderComponent(<Component text="blue" key="B" />, container);
+    ReactMount.renderComponent(<Component text="blue" key="B" />, container);
     expect(container.firstChild.innerHTML).toBe('blue');
     expect(mockMount.mock.calls.length).toBe(2);
     expect(mockUnmount.mock.calls.length).toBe(1);
